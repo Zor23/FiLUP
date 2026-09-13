@@ -1,182 +1,188 @@
-# FiLUP — Finance Level Up
+<div align="center">
+FiLUP — Finance Level Up
 
-Aplikasi web pencatatan & edukasi keuangan bergaya game untuk pelajar, dibuat oleh **Tim STIBAJRA (SMK TI Bali Global Jimbaran)** untuk **Bali AI Tech Fest 2026 — AI Web Innovation Challenge**.
+Aplikasi web keuangan bergaya game untuk pelajar. Foto struknya, AI yang mencatat, kamu yang naik level.
 
-FiLUP membantu pelajar mencatat pemasukan/pengeluaran secara otomatis lewat AI (foto struk/bukti transfer langsung terbaca), membuat "misi" tabungan untuk barang impian, naik level lewat sistem XP, dan bertanya ke asisten AI soal kondisi keuangannya.
+Karya Tim STIBAJRA — SMK TI Bali Global Jimbaran untuk Bali AI Tech Fest 2026 · AI Web Innovation Challenge
 
-## Status Proyek
+Demo langsung · Cara kerja · Tentang
 
-Frontend (Next.js + Tailwind) sudah lengkap untuk semua halaman utama.
+</div>
+Masalah
 
-- ✅ **Firebase Authentication aktif** — daftar, masuk, keluar, proteksi halaman
-- ✅ **Integrasi Gemini AI aktif di tiga tempat** — Scan Struk, Asisten AI, dan Wawasan AI
-- ✅ **Firestore aktif** — transaksi, misi, XP, level, dan streak tersimpan permanen dan tersinkron real-time
-- ✅ **Siap dipasang sebagai PWA** — bisa ditambahkan ke layar utama HP dan dibuka tanpa bilah alamat
-- ⏳ Sisa: push ke GitHub, deploy ke Hostinger, rekam demo, lengkapi materi submission
+Menurut SNLIK 2026 (OJK), tingkat literasi keuangan nasional berada di 69,57%, tetapi kelompok pelajar dan mahasiswa hanya 62,72% — di bawah rata-rata nasional.
 
-### Tiga tempat AI bekerja
+Akar masalahnya bukan kemalasan. Kami mencobanya sendiri: buku catatan, aplikasi keuangan untuk orang dewasa, catatan di HP — semuanya berhenti di minggu kedua. Dua hambatannya selalu sama:
 
-| Halaman | Route server | Peran AI |
-|---|---|---|
-| Scan | `/api/scan-receipt` | membaca gambar struk (visi) |
-| Asisten | `/api/chat` | menjawab pertanyaan keuangan |
-| Beranda aplikasi | `/api/wawasan` | menceritakan analisis keuangan |
+Mencatat itu merepotkan. Mengetik nominal, memilih kategori, mengulang setiap kali jajan.
+Mencatat tidak ada hadiahnya. Hasilnya cuma daftar angka yang tidak memberi rasa maju.
+Solusi
 
-**AI tidak pernah berhitung.** Seluruh angka — total per kategori, rata-rata
-harian, tren pekan ini dibanding pekan lalu, sisa hari misi — dihitung di
-`src/lib/analisis.js`, lalu dikirim ke Gemini sebagai fakta jadi untuk
-diceritakan. Model bahasa cukup sering keliru menjumlah, dan satu angka salah
-pada aplikasi keuangan lebih merugikan daripada kalimat yang kaku.
+FiLUP menghapus kedua hambatan itu sekaligus.
 
-Keluaran Wawasan AI diminta dalam JSON terstruktur, lalu masih divalidasi:
-nominal saran misi dibulatkan ke kelipatan 10.000 dan dijepit ke rentang
-Rp50.000–Rp1.000.000. Route-nya selalu menjawab HTTP 200 — bila kunci API
-kosong atau Gemini bermasalah, yang dikirim adalah wawasan hasil hitungan
-murni, dan kartunya menyebut apa adanya dari mana isinya berasal.
+Foto struknya, AI yang mengetik. Struk belanja atau bukti transfer difoto langsung dari kamera HP. Gemini membaca nama toko, nominal, dan kategorinya, lalu menyodorkan formulir yang sudah terisi — pengguna tinggal memeriksa dan menyimpan.
 
-### Model Gemini & ketahanan terhadap gangguan
+Setiap catatan memberi XP. Naik level, naik rank, buka lencana, kejar misi tabungan untuk barang impian. Kebiasaan baik jadi terasa seperti naik level, bukan seperti tugas.
 
-Rantai model default:
+Demo
 
-```
-gemini-3.7-flash  →  gemini-3.6-flash  →  gemini-3.5-flash
-    (utama)              (cadangan 1)         (cadangan 2)
-```
+Tautan: https://ISI-DOMAIN-KAMU
 
-Model lama `gemini-2.0-flash` sudah dihentikan Google pada 1 Juni 2026
+Akun uji coba yang datanya sudah terisi, supaya bisa langsung dilihat tanpa perlu mendaftar dan mencari struk:
 
-Tiga lapis pengaman, dan **semuanya berjalan tanpa terlihat pengguna**:
+	
+Email	ISI-EMAIL-DEMO
+Kata sandi	ISI-KATA-SANDI-DEMO
 
-1. **Pengulangan** (server, `src/lib/geminiFetch.js`) — error 503 `UNAVAILABLE` diulang dengan jeda bertambah.
-2. **Model cadangan** (server) — kalau satu model tetap gagal, otomatis pindah ke model berikutnya.
-3. **Pengulangan senyap** (browser) — kalau seluruh rantai penuh, halaman mencoba lagi hingga 2 kali sambil **melewati model yang tadi sibuk** (`skipModels`). Indikator "mengetik" / "AI sedang membaca" tetap berjalan, dan tidak ada pesan teknis yang muncul.
+Kalau ingin mencoba dari akun kosong, silakan daftar sendiri — seluruh alur onboarding berfungsi penuh.
 
-Pengguna hanya diberi tahu kalau seluruh usaha itu gagal.
+<!-- ISI: tambahkan 3 tangkapan layar di sini setelah deploy, mis. ![Beranda](docs/beranda.png) ![Dashboard](docs/dashboard.png) ![Scan struk](docs/scan.png) -->
+Fitur
 
-Yang **tidak** diulang: API key tidak valid, akses ditolak, dan kuota habis — mengulangnya hanya membuang kuota. Ketiganya justru ditampilkan sebagai panel teknis, karena itu masalah yang harus kamu perbaiki, bukan gangguan sesaat. Model yang dihentikan (404) langsung dilewati tanpa pengulangan.
+Pencatatan otomatis dari foto Scan struk atau bukti transfer m-banking. Gambar dikompresi di browser sebelum dikirim supaya tetap cepat di data seluler.
 
-Semuanya bisa diatur tanpa ubah kode, lewat `.env.local`:
+Misi tabungan Buat target untuk barang impian lengkap dengan nominal dan tenggat. Progres dan sisa hari terlihat, dan aplikasi menghitung berapa yang harus disisihkan per minggu.
 
-```
-GEMINI_MODEL=              # kosongkan untuk pakai default
-GEMINI_FALLBACK_MODELS=    # kosongkan untuk pakai default
-```
+Misi bersama Menabung patungan bersama teman — untuk kado, acara kelas, atau barang yang dipakai bersama. Setiap anggota melihat kontribusi masing-masing.
 
-Daftar model aktif: [ai.google.dev/gemini-api/docs/deprecations](https://ai.google.dev/gemini-api/docs/deprecations).
+Teman lewat kode unik Setiap pengguna punya kode enam karakter. Tidak ada pencarian berdasarkan nama atau email, jadi tidak ada orang asing yang bisa menemukanmu.
 
-### Kenapa tetap Gemini, bukan penyedia lain?
+Asisten AI Bertanya soal kondisi keuangan sendiri dan mendapat jawaban yang memakai saldo dan misi yang sebenarnya, bukan jawaban umum.
 
-Panduan lomba mengizinkan OpenAI, Hugging Face, dan TensorFlow.js. Tapi untuk kebutuhan FiLUP — **membaca gambar struk** pada tier gratis — Gemini masih yang paling longgar: sekitar 1.500 permintaan/hari, dibanding OpenRouter yang hanya ~50/hari. OpenAI tidak punya tier gratis untuk API, sedangkan Groq, Mistral, dan Cerebras belum mendukung input gambar di tier gratisnya.
+Wawasan AI Analisis pola pengeluaran mingguan, plus satu saran misi tabungan yang realistis dibanding saldo pengguna.
 
-Karena itu redundansi dibangun di **tingkat model** (rantai di atas), bukan dengan menambah penyedia kedua yang justru lebih terbatas.
+Kuis harian Satu pertanyaan literasi keuangan per hari. Menjawab saja sudah dapat XP — tujuannya belajar, bukan ujian.
 
-### Mode Demo (otomatis)
+Level, rank, dan lencana XP dari mencatat (10), menyelesaikan misi (50), kuis benar (15), dan menabung bersama (5). Lima tingkat rank bertema uang jajan: Receh → Celengan → Dompet Tebal → Brankas → Sultan. Lencana dihitung dari data nyata, bukan daftar tetap.
 
-Aplikasi mendeteksi sendiri apakah kredensial Firebase sudah diisi:
+Bisa dipasang di layar utama Sudah berupa PWA — bisa ditambahkan ke home screen HP dan dibuka tanpa bilah alamat.
 
-| | Firebase belum diisi | Firebase sudah diisi |
-|---|---|---|
-| Status | **Mode Demo** (ada penanda kuning di aplikasi) | Mode Normal |
-| Login | Form terisi otomatis, satu klik langsung masuk | Login sungguhan ke Firebase Auth |
-| Halaman terproteksi | Bisa dibuka bebas (untuk presentasi) | Wajib login, kalau belum akan dialihkan ke `/login` |
-| Data profil | Data contoh | Dari dokumen Firestore `users/{uid}` |
-| Transaksi & misi | Data contoh, perubahan hanya di memori | Tersimpan di Firestore, sinkron real-time |
-| XP & level | Ikut bertambah (biar bisa diperagakan) | Tersimpan permanen di Firestore |
+Implementasi AI
 
-Fitur AI juga punya perilaku serupa berdasarkan `GEMINI_API_KEY`:
+FiLUP memakai Google Gemini di tiga tempat, masing-masing lewat API route Next.js di sisi server sehingga API key tidak pernah sampai ke browser.
 
-| | `GEMINI_API_KEY` kosong | Sudah diisi |
-|---|---|---|
-| Scan struk | Muncul hasil simulasi + label kuning **"Hasil simulasi"** | Gambar benar-benar dikirim ke Gemini dan dibaca |
-| Asisten AI | Jawaban contoh + label **"Jawaban simulasi"** | Jawaban asli dari Gemini, memakai konteks saldo & misi aktif |
+Route	Fungsi	Masukan
+POST /api/scan-receipt	Membaca gambar struk (visi) → JSON berisi merchant, nominal, kategori, jenis	Gambar
+POST /api/chat	Asisten keuangan percakapan	Pesan + saldo & misi aktif
+POST /api/wawasan	Analisis pola pengeluaran + saran misi	Statistik yang sudah dihitung aplikasi
 
-Labelnya sengaja ditampilkan supaya tidak pernah ada kesan fitur AI sudah aktif padahal belum.
+Empat keputusan teknis yang kami anggap penting:
 
-Artinya kamu bisa langsung `npm run dev` dan mendemokan seluruh tampilan tanpa menyiapkan apa pun.
+1. AI membaca, manusia memutuskan. Hasil pembacaan struk tidak pernah langsung disimpan. Selalu ditampilkan sebagai formulir yang bisa dikoreksi lebih dulu. AI di sini mempercepat pengetikan, bukan mengambil alih pencatatan keuangan seseorang.
 
-## Tech Stack
+2. AI tidak pernah menghitung angka. Ini yang membedakan halaman Wawasan dari sekadar menempelkan chatbot. Seluruh angka — total pemasukan, pengeluaran per kategori, rata-rata harian — dihitung aplikasi secara deterministik di src/lib/analisis.js. Gemini hanya menerima fakta yang sudah jadi, dengan instruksi tegas untuk menyalin nominal persis dan dilarang menghitung ulang. Model bahasa tidak bisa diandalkan untuk aritmetika, dan angka keuangan yang salah lebih berbahaya daripada tidak ada angka sama sekali.
 
-- **Next.js** (App Router, JavaScript) — frontend & API routes dalam satu project
-- **Tailwind CSS v4** — styling
-- **Firebase** — Authentication (email/password) & Firestore (database)
-- **Google Gemini API** — baca gambar struk (visi), asisten AI, & analisis keuangan
-- **Hostinger (Business Web Hosting)** — hosting/deploy
+3. Rantai model cadangan, tanpa mengganggu pengguna. Kalau Gemini menjawab 503 karena sedang ramai, permintaan diulang dengan jeda bertambah, lalu otomatis berpindah ke model berikutnya: gemini-3.7-flash → 3.6-flash → 3.5-flash → 3.5-flash-lite. Indikator "AI sedang membaca" tetap berjalan — pengguna tidak pernah melihat pesan teknis soal model sibuk. Masalah yang memang tidak bisa diperbaiki dengan mengulang (API key salah, kuota habis) langsung dilaporkan apa adanya. Lihat src/lib/geminiFetch.js.
 
-Detail lengkap arsitektur, struktur data, alur integrasi AI, dan roadmap ada di dokumen `RANCANGAN_TEKNIS_FiLUP.md`.
+4. Label kejujuran. Kalau GEMINI_API_KEY belum diisi, hasil scan dan jawaban chat diberi label kuning "Hasil simulasi". Fitur AI tidak pernah dibuat terlihat aktif padahal belum.
 
-## Menjalankan di Lokal
+Tech Stack
+Bagian	Pilihan
+Framework	Next.js 16 (App Router, JavaScript)
+Styling	Tailwind CSS v4
+Autentikasi	Firebase Authentication (email/password)
+Database	Cloud Firestore
+AI	Google Gemini API
+Hosting	Hostinger Business (Node.js App)
 
-```bash
+Font (Plus Jakarta Sans, JetBrains Mono, Bodoni Moda) dipasang lewat paket npm @fontsource-variable/*, bukan next/font/google — supaya build tidak bergantung pada akses ke server Google Fonts dan halaman tidak memanggil domain pihak ketiga saat dibuka.
+
+Menjalankan di lokal
+bash
+git clone https://github.com/Zor23/FiLUP.git
+cd FiLUP
 npm install
 npm run dev
-```
 
-Buka [http://localhost:3000](http://localhost:3000) di browser.
+Buka http://localhost:3000.
 
-## Struktur Folder Penting
+Tanpa konfigurasi apa pun, aplikasi langsung jalan dalam mode demo memakai data contoh dari src/lib/mockData.js — halaman terproteksi bisa dibuka, form login terisi otomatis, dan hasil AI diganti contoh berlabel "simulasi". Ini disengaja supaya aplikasi tetap bisa diperagakan walau konfigurasi atau internet bermasalah.
 
-```
-src/app/                 halaman-halaman (landing, login, register, dashboard, scan, misi, asisten, riwayat, profil)
-src/app/not-found.js     halaman 404 bertema
-src/app/error.js         halaman galat tak terduga
-src/app/manifest.js      manifest PWA (bisa dipasang ke layar utama HP)
-src/app/robots.js        robots.txt — halaman berisi data pribadi ditutup dari mesin pencari
-src/app/sitemap.js       sitemap.xml (hanya halaman publik)
-src/app/api/             API routes (scan-receipt, chat, wawasan) — pemanggil Gemini API
-src/components/          komponen reusable (AppShell, AuthLayout, Logo, Button, XPBar, MissionCard, TransactionRow, WawasanAI)
-src/components/publik/   komponen khusus halaman publik (nav, footer, kartu tarot)
-src/contexts/            AuthProvider (status login) & DataProvider (transaksi, misi, XP)
-src/lib/analisis.js      SELURUH hitungan statistik keuangan (AI tidak pernah berhitung)
-src/lib/db.js            operasi Firestore
-src/lib/firebase.js      konfigurasi Firebase + deteksi mode demo
-src/lib/gamification.js  aturan XP & level
-src/lib/ranks.js         lima jenjang rank (Receh → Sultan)
-src/lib/geminiFetch.js   pemanggil Gemini + pengulangan & model cadangan
-src/lib/geminiError.js   penerjemah error Gemini ke bahasa Indonesia
-src/lib/mockData.js      data contoh untuk mode demo (tanggalnya relatif hari ini)
-firestore.rules          security rules Firestore
-```
+Untuk menjalankan dengan backend sungguhan, salin .env.local.example menjadi .env.local lalu isi nilainya.
 
-## Menghubungkan Backend (Firebase & Gemini)
+Environment variables
+Variabel	Wajib	Keterangan
+NEXT_PUBLIC_SITE_URL	untuk produksi	Alamat situs tanpa garis miring di akhir. Dipakai untuk Open Graph, sitemap.xml, dan robots.txt
+NEXT_PUBLIC_FIREBASE_API_KEY	ya	Firebase Console → Project Settings → SDK setup
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN	ya	
+NEXT_PUBLIC_FIREBASE_PROJECT_ID	ya	
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET	ya	
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID	ya	
+NEXT_PUBLIC_FIREBASE_APP_ID	ya	
+GEMINI_API_KEY	ya	https://aistudio.google.com/apikey — tanpa awalan NEXT_PUBLIC_, hanya dipakai di server
+GEMINI_MODEL	tidak	Default gemini-3.7-flash
+GEMINI_FALLBACK_MODELS	tidak	Dipisah koma. Model bisa diganti tanpa mengubah kode kalau Google menghentikannya
 
-1. Salin `.env.local.example` menjadi `.env.local`, lalu isi:
-   - `NEXT_PUBLIC_FIREBASE_*` — didapat dari Firebase Console (Project Settings > General > Your apps).
-   - `GEMINI_API_KEY` — didapat dari [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
-   - `NEXT_PUBLIC_SITE_URL` — alamat situs saat sudah online (tanpa garis miring
-     di akhir). Wajib diisi saat deploy karena dipakai untuk tag Open Graph,
-     `sitemap.xml`, dan `robots.txt`.
-2. Di Firebase Console, aktifkan **Authentication** (metode Email/Password) dan **Firestore Database**.
-3. Pasang security rules: buka Firestore → tab **Rules**, tempel isi file `firestore.rules` di project ini, klik **Publish**. Aturan ini memastikan setiap pengguna hanya bisa mengakses datanya sendiri.
-4. Setelah itu login/daftar/keluar sudah langsung berfungsi — **tidak perlu ubah kode lagi**.
+Variabel berawalan NEXT_PUBLIC_ ditanam saat build, bukan dibaca saat aplikasi berjalan — jadi isi dulu, baru jalankan npm run build.
 
-Setelah keempat langkah di atas, **seluruh fitur langsung aktif — tidak ada lagi kode yang perlu diubah.** Login, penyimpanan transaksi, misi, XP, level, dan streak semuanya sudah tersambung.
+Struktur folder
+src/app/                     halaman (App Router)
+  page.js                    beranda publik
+  tentang/  cara-kerja/      halaman publik
+  dashboard/  scan/  misi/   halaman aplikasi
+  asisten/  riwayat/  profil/
+  kuis/  teman/              kuis harian & sosial
+  api/scan-receipt/          OCR struk via Gemini
+  api/chat/                  asisten AI via Gemini
+  api/wawasan/               analisis keuangan via Gemini
 
-### Struktur data & gamifikasi
+src/components/              komponen antarmuka
+  publik/                    khusus halaman publik (kartu tarot, navigasi, footer)
 
-```
-users/{uid}                      → name, email, level, xp, streakDays, lastActiveDate
-users/{uid}/transactions/{id}    → merchant, amount, type, category, source, createdAt
-users/{uid}/missions/{id}        → title, icon, targetAmount, currentAmount, deadline, status
-```
+src/contexts/
+  AuthProvider.js            status login, profil, XP
+  DataProvider.js            transaksi, misi, saldo
+  SosialProvider.js          teman & misi bersama
 
-- `src/lib/db.js` — semua operasi Firestore (langganan real-time, simpan, tambah XP, hitung streak)
-- `src/contexts/DataProvider.js` — satu sumber data untuk semua halaman, sekaligus menangani mode demo. Semua halaman cukup memakai `useData()`
-- `src/lib/gamification.js` — aturan XP: `xpToNextLevel(level) = 100 + level × 100`, dan `XP_REWARD` (catat transaksi +10, buat misi +5, selesaikan misi +50). Naik level bisa lebih dari satu tingkat sekaligus
-- Saldo **tidak** disimpan sebagai angka tersendiri, melainkan dihitung dari total transaksi — supaya tidak pernah tidak sinkron
+src/lib/
+  firebase.js                init Firebase + flag isFirebaseConfigured
+  db.js                      operasi Firestore
+  analisis.js                perhitungan statistik keuangan (deterministik)
+  gamification.js            aturan XP & level
+  ranks.js                   sistem rank
+  kuisHarian.js              bank soal kuis
+  geminiFetch.js             pemanggil Gemini + pengulangan + model cadangan
+  geminiError.js             penerjemah error Gemini ke bahasa Indonesia
+  kompresGambar.js           memperkecil foto struk sebelum diunggah
+  mockData.js                data contoh untuk mode demo
 
-### Struktur Auth
+firestore.rules              security rules — harus di-publish manual di Console
+server.js                    titik masuk untuk Hostinger Node.js App
 
-- `src/lib/firebase.js` — inisialisasi Firebase + flag `isFirebaseConfigured`
-- `src/contexts/AuthProvider.js` — state login global, hook `useAuth()`, pesan error berbahasa Indonesia
-- `src/components/AppShell.js` — sekaligus penjaga halaman; setiap halaman yang dibungkus AppShell otomatis terproteksi
-- `firestore.rules` — security rules Firestore
-- Dokumen profil dibuat otomatis saat daftar: `users/{uid}` → `{ name, email, level: 1, xp: 0, streakDays: 0, createdAt }`
+Halaman tidak pernah memanggil Firestore langsung — selalu lewat useData(), useAuth(), atau useSosial(), supaya mode demo tetap berfungsi.
 
-## Deploy
+Keamanan data
 
-Lihat bagian "8. Deploy ke Hostinger" di `RANCANGAN_TEKNIS_FiLUP.md` untuk langkah lengkap deploy ke Hostinger Business Web Hosting (via Node.js App di hPanel).
+Aturan akses ada di firestore.rules dan harus ditempel manual di Firebase Console → Firestore → tab Rules → Publish.
 
-## Tim
+Catatan keuangan (users/{uid}/...) hanya bisa dibaca dan ditulis pemiliknya
+Yang bisa dilihat pengguna lain hanya profil publik: nama, level, dan kode teman
+Kode teman hanya bisa dibuat sekali dan tidak bisa diubah, jadi kode orang lain tidak bisa dibajak
+Pada misi bersama, setiap anggota hanya bisa menambah kontribusinya sendiri — tidak bisa menguranginya, dan tidak bisa menyentuh milik anggota lain
+Segala akses di luar aturan di atas ditolak
 
-**STIBAJRA — SMK TI Bali Global Jimbaran**
-Rafa Perfours Mita · Komang Tri Saguna Narya Ardana
+Saldo sengaja tidak disimpan sebagai field, melainkan selalu dihitung ulang dari daftar transaksi — sehingga tidak pernah ada angka saldo yang tidak cocok dengan riwayatnya.
+
+Deploy
+
+Aplikasi ini dijalankan di Hostinger Business Web Hosting lewat fitur Node.js App di hPanel.
+
+hPanel → Website → Node.js → Create Application
+Node.js versi 22, Application startup file: server.js
+Hubungkan ke repository ini lewat opsi Git
+Isi seluruh Environment Variables terlebih dahulu (lihat tabel di atas)
+Jalankan Install Dependencies, lalu Run NPM Build
+Restart Application
+Tambahkan domain ke Firebase Console → Authentication → Settings → Authorized domains
+
+Langkah 4 harus dilakukan sebelum langkah 5. Kalau terbalik, konfigurasi Firebase kosong di hasil build dan aplikasi akan berjalan dalam mode demo di produksi.
+
+Tim STIBAJRA
+
+SMK TI Bali Global Jimbaran
+
+Nama	Peran
+Rafa Perfours Mita	Pengembangan aplikasi & integrasi AI
+Komang Tri Saguna Narya Ardana	Desain & pengalaman pengguna
+
+Dibuat untuk Bali AI Tech Fest 2026, kategori AI Web Innovation Challenge — "Create Smart Web Solutions with AI for Indonesia's Future".
