@@ -51,7 +51,7 @@ Tiga lapis pengaman, dan **semuanya berjalan tanpa terlihat pengguna**:
 2. **Model cadangan** (server) — kalau satu model tetap gagal, otomatis pindah ke model berikutnya.
 3. **Pengulangan senyap** (browser) — kalau seluruh rantai penuh, halaman mencoba lagi hingga 2 kali sambil **melewati model yang tadi sibuk** (`skipModels`). Indikator "mengetik" / "AI sedang membaca" tetap berjalan, dan tidak ada pesan teknis yang muncul.
 
-Pengguna hanya diberi tahu kalau seluruh usaha itu gagal — dan pesannya pakai bahasa biasa ("aku sedang menerima banyak pertanyaan"), bukan istilah teknis.
+Pengguna hanya diberi tahu kalau seluruh usaha itu gagal.
 
 Yang **tidak** diulang: API key tidak valid, akses ditolak, dan kuota habis — mengulangnya hanya membuang kuota. Ketiganya justru ditampilkan sebagai panel teknis, karena itu masalah yang harus kamu perbaiki, bukan gangguan sesaat. Model yang dihentikan (404) langsung dilewati tanpa pengulangan.
 
