@@ -43,7 +43,7 @@ gemini-3.7-flash  →  gemini-3.6-flash  →  gemini-3.5-flash
     (utama)              (cadangan 1)         (cadangan 2)
 ```
 
-Model lama `gemini-2.0-flash` sudah dihentikan Google pada 1 Juni 2026 — jangan dipakai lagi.
+Model lama `gemini-2.0-flash` sudah dihentikan Google pada 1 Juni 2026
 
 Tiga lapis pengaman, dan **semuanya berjalan tanpa terlihat pengguna**:
 
