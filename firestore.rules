@@ -1,0 +1,152 @@
+rules_version = '2';
+
+// Security Rules Firestore untuk FiLUP.
+//
+// Cara memasang:
+// 1. Buka Firebase Console → Firestore Database → tab "Rules".
+// 2. Ganti seluruh isinya dengan file ini, lalu klik "Publish".
+//
+// WAJIB DI-PUBLISH ULANG setelah fitur teman, misi bersama, dan kuis harian
+// ditambahkan. Tanpa itu, semua fitur tersebut ditolak dengan
+// "permission-denied".
+//
+// Prinsipnya:
+// - Data pribadi (users/{uid}/...) HANYA bisa dibaca dan ditulis pemiliknya.
+// - Yang boleh dilihat pengguna lain hanyalah profilPublik (nama, level,
+//   kode teman), dan hanya oleh pengguna yang sudah login.
+// - Pertemanan dan misi bersama hanya bisa dibaca anggotanya sendiri.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function masuk() {
+      return request.auth != null;
+    }
+
+    // Pemilik data = pengguna yang sedang login dengan uid yang sama.
+    function isOwner(uid) {
+      return masuk() && request.auth.uid == uid;
+    }
+
+    // ---------------------------------------------------------------
+    // Data pribadi
+    // ---------------------------------------------------------------
+
+    // Dokumen profil pengguna: users/{uid}
+    // (termasuk catatan kuis harian: kuis, kuisBeruntun)
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid);
+      allow update: if isOwner(uid);
+      // Penghapusan akun sengaja tidak diizinkan dari sisi klien.
+      allow delete: if false;
+
+      // Seluruh subkoleksi milik pengguna:
+      // transactions, missions, chatHistory, badges
+      match /{subcollection}/{docId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // ---------------------------------------------------------------
+    // Profil publik & kode teman
+    // ---------------------------------------------------------------
+
+    // Nama dan level yang boleh dilihat pengguna lain (untuk daftar teman).
+    match /profilPublik/{uid} {
+      allow read: if masuk();
+      allow create, update: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['nama', 'level', 'kodeTeman'])
+        && request.resource.data.nama is string
+        && request.resource.data.nama.size() <= 60;
+      allow delete: if false;
+    }
+
+    // Kode teman → uid. Hanya bisa DIBUAT sekali, tidak bisa diubah atau
+    // dihapus — jadi kode milik orang lain tidak bisa dibajak. Upaya
+    // menulis kode yang sudah dipakai dihitung sebagai "update" dan ditolak;
+    // klien memakai penolakan itu sebagai tanda untuk mencoba kode lain.
+    match /kodeTeman/{kode} {
+      allow read: if masuk();
+      allow create: if masuk()
+        && kode.matches('^[A-HJ-NP-Z2-9]{6}$')
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // ---------------------------------------------------------------
+    // Pertemanan: satu dokumen per pasangan, id = uidKecil_uidBesar
+    // ---------------------------------------------------------------
+    match /pertemanan/{id} {
+      allow read: if masuk() && request.auth.uid in resource.data.anggota;
+
+      // Hanya pengirim yang membuat permintaan, statusnya harus "menunggu",
+      // dan id dokumen harus sama dengan pasangan yang diurutkan — sehingga
+      // satu pasangan tidak mungkin punya dua dokumen.
+      allow create: if masuk()
+        && request.resource.data.keys().hasOnly(['anggota', 'pengirim', 'penerima', 'status', 'dibuat'])
+        && request.resource.data.anggota.size() == 2
+        && request.resource.data.anggota[0] < request.resource.data.anggota[1]
+        && id == request.resource.data.anggota[0] + '_' + request.resource.data.anggota[1]
+        && request.resource.data.pengirim == request.auth.uid
+        && request.auth.uid in request.resource.data.anggota
+        && request.resource.data.penerima in request.resource.data.anggota
+        && request.resource.data.penerima != request.auth.uid
+        && request.resource.data.status == 'menunggu';
+
+      // Hanya PENERIMA yang boleh menerima, dan tidak ada kolom lain yang
+      // boleh ikut berubah.
+      allow update: if masuk()
+        && request.auth.uid == resource.data.penerima
+        && resource.data.status == 'menunggu'
+        && request.resource.data.status == 'diterima'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+
+      // Menolak, membatalkan, atau memutus pertemanan: salah satu anggota.
+      allow delete: if masuk() && request.auth.uid in resource.data.anggota;
+    }
+
+    // ---------------------------------------------------------------
+    // Misi bersama
+    // ---------------------------------------------------------------
+    //
+    // Total terkumpul tidak disimpan — dihitung di klien dari `kontribusi`.
+    // Rules menjamin setiap anggota hanya bisa MENAMBAH kontribusinya
+    // sendiri; tidak bisa mengubah milik orang lain, tidak bisa mengurangi.
+    //
+    // Batasan yang disadari: rules tidak memeriksa apakah anggota yang
+    // dimasukkan pembuat benar-benar temannya (butuh satu get() per anggota).
+    // Risikonya kecil: uid orang lain hanya diketahui lewat pertemanan.
+    match /misiBersama/{id} {
+      allow read: if masuk() && request.auth.uid in resource.data.anggota;
+
+      allow create: if masuk()
+        && request.resource.data.keys().hasOnly(['judul', 'icon', 'targetAmount', 'deadline', 'pembuat', 'anggota', 'namaAnggota', 'kontribusi', 'dibuat'])
+        && request.resource.data.pembuat == request.auth.uid
+        && request.auth.uid in request.resource.data.anggota
+        && request.resource.data.anggota.size() >= 2
+        && request.resource.data.anggota.size() <= 6
+        && request.resource.data.judul is string
+        && request.resource.data.judul.size() <= 60
+        && request.resource.data.targetAmount is number
+        && request.resource.data.targetAmount > 0
+        && request.resource.data.kontribusi.size() == 0;
+
+      allow update: if masuk()
+        && request.auth.uid in resource.data.anggota
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['kontribusi', 'diperbarui'])
+        && request.resource.data.kontribusi.diff(resource.data.kontribusi).affectedKeys().hasOnly([request.auth.uid])
+        && request.resource.data.kontribusi[request.auth.uid] is number
+        && request.resource.data.kontribusi[request.auth.uid] > resource.data.kontribusi.get(request.auth.uid, 0)
+        && request.resource.data.kontribusi[request.auth.uid] - resource.data.kontribusi.get(request.auth.uid, 0) <= 10000000;
+
+      allow delete: if masuk() && request.auth.uid == resource.data.pembuat;
+    }
+
+    // Selain aturan di atas, semuanya ditolak.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

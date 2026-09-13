@@ -1,0 +1,953 @@
+@import "tailwindcss";
+
+/* Font di-install lewat npm (@fontsource-variable), jadi file font-nya ada di
+   dalam project — tidak perlu koneksi internet saat build maupun saat dibuka. */
+@import "@fontsource-variable/plus-jakarta-sans";
+@import "@fontsource-variable/jetbrains-mono";
+/* Serif Didone untuk judul halaman publik (tema Mystic Editorial) */
+@import "@fontsource-variable/bodoni-moda";
+
+:root {
+  /* ---- Warna dasar ----
+     Sejak halaman publik memakai tema "Mystic Editorial", token halaman
+     aplikasi ikut dipindah ke palet ungu-malam yang sama supaya dashboard
+     terasa satu keluarga dengan beranda. Nilainya sengaja disamakan dengan
+     token myst-* di bagian bawah berkas ini. */
+  --color-filup-bg: #0a0710;
+  --color-filup-bg-2: #120c1c;
+  --color-filup-surface: #150e20;
+  --color-filup-surface-2: #1a1226;
+  --color-filup-border: #2a2038;
+
+  /* ---- Warna aksen ----
+     Hijau = pemasukan, merah = pengeluaran/peringatan.
+
+     XP dulu memakai emas. Emas sudah dihapus dari seluruh antarmuka supaya
+     tidak ada satu pun warna yang keluar dari tema ungu-malam; XP sekarang
+     memakai "arcane" — lilac paling terang menuju putih keperakan. Nadanya
+     jauh lebih terang daripada ungu suasana di sekitarnya, jadi tetap terbaca
+     sebagai penanda data, bukan sekadar hiasan.
+
+     Satu-satunya emas yang tersisa ada di dalam logo dan frame sekuens — itu
+     aset brand, sengaja tidak diutak-atik. */
+  --color-filup-primary: #a78bfa;
+  --color-filup-primary-dark: #6d28d9;
+  --color-filup-accent: #c084fc;
+  --color-filup-xp: #e9d5ff;
+  --color-filup-xp-terang: #ffffff;
+  --color-filup-green: #34d399;
+  --color-filup-red: #f87171;
+
+  /* ---- Palet aurora ----
+     Diambil dari referensi desain aplikasi keuangan: gradasi indigo menyala
+     → ungu → lilac, dengan aksen periwinkle untuk tombol dan batang aktif.
+     Menggeser nada ungu lama sedikit ke arah biru — lebih dingin, lebih
+     "tenang", dan lebih jauh dari kesan mistis. */
+  --color-filup-indigo: #5b34f2;
+  --color-filup-periwinkle: #7c80f8;
+  --color-filup-lavender: #d9ceff;
+
+  /* ---- Teks ---- */
+  --color-filup-text: #f4f0fa;
+  --color-filup-muted: #a79bb8;
+
+  --background: var(--color-filup-bg);
+  --foreground: var(--color-filup-text);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-filup-bg: var(--color-filup-bg);
+  --color-filup-bg-2: var(--color-filup-bg-2);
+  --color-filup-surface: var(--color-filup-surface);
+  --color-filup-surface-2: var(--color-filup-surface-2);
+  --color-filup-border: var(--color-filup-border);
+  --color-filup-primary: var(--color-filup-primary);
+  --color-filup-primary-dark: var(--color-filup-primary-dark);
+  --color-filup-accent: var(--color-filup-accent);
+  --color-filup-xp: var(--color-filup-xp);
+  --color-filup-xp-terang: var(--color-filup-xp-terang);
+  --color-filup-green: var(--color-filup-green);
+  --color-filup-red: var(--color-filup-red);
+  --color-filup-indigo: var(--color-filup-indigo);
+  --color-filup-periwinkle: var(--color-filup-periwinkle);
+  --color-filup-lavender: var(--color-filup-lavender);
+  --color-filup-text: var(--color-filup-text);
+  --color-filup-muted: var(--color-filup-muted);
+
+  --font-sans: "Plus Jakarta Sans Variable", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pop: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ============ Base ============ */
+
+body {
+  background: var(--color-filup-bg);
+  color: var(--color-filup-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Latar: cahaya lembut palet aurora (indigo → ungu) supaya latar tidak datar */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      60rem 40rem at 15% -10%,
+      rgba(91, 52, 242, 0.22),
+      transparent 60%
+    ),
+    radial-gradient(
+      50rem 35rem at 100% 0%,
+      rgba(154, 92, 198, 0.16),
+      transparent 60%
+    ),
+    radial-gradient(
+      45rem 30rem at 50% 110%,
+      rgba(76, 36, 200, 0.14),
+      transparent 60%
+    );
+}
+
+::selection {
+  background: rgba(167, 139, 250, 0.35);
+}
+
+/* Scrollbar tipis biar menyatu dengan tema gelap */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-filup-border) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-filup-border);
+  border-radius: 99px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #3b2d50;
+}
+
+/* ============ Komponen utilitas ============ */
+
+/* Kartu kaca (glassmorphism): latar semi transparan + garis tepi tipis */
+.card {
+  position: relative;
+  background: linear-gradient(
+    160deg,
+    rgba(26, 18, 38, 0.88),
+    rgba(21, 14, 32, 0.78)
+  );
+  border: 1px solid rgba(201, 169, 255, 0.14);
+  border-radius: 1.25rem;
+  backdrop-filter: blur(12px);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.05) inset,
+    0 12px 32px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* Efek angkat halus saat kursor di atas kartu yang bisa diklik */
+.card-hover {
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: rgba(201, 169, 255, 0.5);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.07) inset,
+    0 18px 40px -14px rgba(0, 0, 0, 0.75),
+    0 0 24px -6px rgba(167, 139, 250, 0.4);
+}
+
+/* Teks dengan gradasi warna */
+.gradient-text {
+  background: linear-gradient(100deg, #e6d8ff 0%, #c9a9ff 45%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.gradient-text-xp {
+  background: linear-gradient(100deg, #ffffff 0%, #e9d5ff 50%, #c9a9ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Tombol utama dengan gradasi + cahaya */
+.btn-gradient {
+  /* Indigo-periwinkle dari palet aurora. SELURUH gradasinya, termasuk ujung
+     yang paling terang (#5d60f0, 4,78:1), lolos kontras 4,5:1 dengan teks
+     putih — di tombol kecil sebagian huruf jatuh tepat di ujung itu. */
+  background: linear-gradient(135deg, #5d60f0 0%, #5157ec 55%, #4338ca 100%);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.25) inset,
+    0 8px 24px -8px rgba(91, 95, 240, 0.7);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+.btn-gradient:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.3) inset,
+    0 12px 30px -8px rgba(91, 95, 240, 0.85);
+}
+.btn-gradient:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Bar XP: gradasi lilac-perak + cahaya */
+.xp-fill {
+  background: linear-gradient(90deg, #a78bfa, #e9d5ff 55%, #ffffff);
+  box-shadow:
+    0 0 14px 0 rgba(233, 213, 255, 0.5),
+    0 0 4px 0 rgba(255, 255, 255, 0.75);
+  position: relative;
+  overflow: hidden;
+}
+/* Bar progres misi */
+.progress-fill {
+  background: linear-gradient(90deg, #7c3aed, #a78bfa 70%, #e6d8ff);
+  box-shadow: 0 0 12px -2px rgba(167, 139, 250, 0.8);
+}
+.progress-fill-done {
+  background: linear-gradient(90deg, #10b981, #34d399 70%, #a7f3d0);
+  box-shadow: 0 0 12px -2px rgba(52, 211, 153, 0.8);
+}
+
+/* Cahaya lembut di belakang elemen penting */
+.glow-primary {
+  box-shadow: 0 0 32px -8px rgba(167, 139, 250, 0.55);
+}
+.glow-xp {
+  box-shadow: 0 0 32px -8px rgba(233, 213, 255, 0.55);
+}
+
+/* Lencana level berbentuk perisai kecil */
+.level-badge {
+  background: linear-gradient(150deg, #ffffff, #e9d5ff 45%, #a78bfa);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.6) inset,
+    0 4px 14px -4px rgba(201, 169, 255, 0.8);
+}
+
+/* Garis penanda menu aktif di sidebar */
+.nav-active-bar {
+  background: linear-gradient(180deg, #c9a9ff, #a78bfa);
+  box-shadow: 0 0 12px 0 rgba(201, 169, 255, 0.9);
+}
+
+/* Animasi masuk berurutan (dipakai dengan style animationDelay) */
+.stagger {
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Muncul lembut saat elemen masuk layar (dipakai komponen Reveal) */
+.fx-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fx-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============ Keyframes ============ */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Hormati preferensi pengguna yang mematikan animasi */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ================================================================
+   TEMA HALAMAN PUBLIK — "Mystic Editorial"
+   Hanya dipakai oleh /, /tentang, /cara-kerja.
+   Token halaman aplikasi (filup-*) di atas TIDAK diubah.
+   ================================================================ */
+
+:root {
+  --myst-void: #0a0710;
+  --myst-surface: #120c1c;
+  --myst-raised: #1a1226;
+  --myst-line: #2a2038;
+  --myst-lilac: #c9a9ff;
+  --myst-violet: #a78bfa;
+  --myst-deep: #6d28d9;
+  --myst-smoke: #c084fc;
+  --myst-text: #f4f0fa;
+  --myst-muted: #a79bb8;
+}
+
+@theme inline {
+  --color-myst-void: var(--myst-void);
+  --color-myst-surface: var(--myst-surface);
+  --color-myst-raised: var(--myst-raised);
+  --color-myst-line: var(--myst-line);
+  --color-myst-lilac: var(--myst-lilac);
+  --color-myst-violet: var(--myst-violet);
+  --color-myst-deep: var(--myst-deep);
+  --color-myst-smoke: var(--myst-smoke);
+  --color-myst-text: var(--myst-text);
+  --color-myst-muted: var(--myst-muted);
+
+  /* utilitas: class `font-display` */
+  --font-display: "Bodoni Moda Variable", "Bodoni Moda", Didot, "Playfair Display",
+    Georgia, serif;
+}
+
+/* Mikro-label mono kapital — ciri khas tema */
+.label-mono {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--myst-muted);
+}
+
+/* Judul serif dengan satu kata bergradasi lilac → putih.
+   Ingat: background-clip:text harus menempel LANGSUNG di elemen katanya. */
+.myst-gradient-word {
+  background: linear-gradient(120deg, var(--myst-lilac) 0%, #ffffff 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Garis rambut 1px */
+.hairline {
+  height: 1px;
+  background: var(--myst-line);
+}
+
+/* ---------- Kartu Tarot ---------- */
+
+.tarot-scene {
+  perspective: 1200px;
+}
+.tarot-inner {
+  /* ukuran diberikan lewat kelas Tailwind di komponen — jangan set di sini,
+     karena aturan ini menang urutan dan pernah membuat kartu kolaps 0x0 */
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tarot-flipped {
+  transform: rotateY(180deg) !important;
+}
+.tarot-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.tarot-back {
+  transform: rotateY(180deg);
+}
+
+/* Kilau holografik yang menyapu diagonal saat kartu disorot.
+   Opasitas ikut diatur di dalam keyframes (bukan di aturan :hover), supaya
+   kilaunya benar-benar padam setelah sapuan selesai. Sebelumnya opacity: 1
+   dipasang di aturan :hover sementara animasinya hanya mengubah transform —
+   akibatnya, begitu sapuan 700ms berakhir, pita putihnya berhenti dan
+   tersangkut di tengah kartu selama kursor masih menyorot. */
+@keyframes tarot-kilau {
+  0% {
+    opacity: 0;
+    transform: translateX(-130%) rotate(18deg);
+  }
+  18% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(230%) rotate(18deg);
+  }
+}
+.tarot-foil {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 70%
+  );
+}
+.group\/tarot:hover .tarot-foil,
+.group\/tarot:focus-visible .tarot-foil {
+  /* `both` menahan keadaan keyframe terakhir — opacity 0 — jadi tidak ada
+     sisa kilau yang tertinggal saat kursor berlama-lama di atas kartu. */
+  animation: tarot-kilau 700ms ease-out both;
+}
+
+/* Reduced motion: flip 3D diganti pergantian isi biasa (ditangani JS),
+   sisanya dimatikan oleh aturan reduce-motion global di atas. */
+
+/* Susunan kipas kartu tarot — hanya mulai lebar 1024px.
+   Di bawah itu kartu digulir horizontal (4 kartu tidak muat di 768px). */
+.tarot-fan {
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (min-width: 1024px) {
+  .tarot-fan {
+    transform: rotate(var(--fan, 0deg)) translateY(var(--fanY, 0px));
+  }
+  /* Terangkat & tegak saat disorot kursor. */
+  .tarot-fan:hover {
+    transform: rotate(0deg) translateY(-14px) scale(1.03);
+    z-index: 10;
+  }
+
+  /* Terangkat juga saat dijelajahi lewat keyboard.
+     Sengaja memakai :has(:focus-visible), BUKAN :focus-within — setelah kartu
+     diklik dengan mouse, tombolnya tetap memegang fokus, sehingga
+     :focus-within membuat kartu tersangkut di posisi terangkat meskipun
+     kursor sudah pergi. :focus-visible hanya cocok untuk fokus dari keyboard.
+     Ditulis sebagai aturan terpisah dari :hover supaya di browser yang belum
+     mendukung :has(), hanya aturan ini yang diabaikan — bukan efek sorot juga. */
+  .tarot-fan:has(:focus-visible) {
+    transform: rotate(0deg) translateY(-14px) scale(1.03);
+    z-index: 10;
+  }
+
+  /* Kartu yang sedang terbuka tetap kembali ke posisi kipasnya saat kursor
+     pergi; yang dinaikkan hanya lapisannya, supaya sisi penjelasan tidak
+     tertimpa kartu di sebelahnya (antar kartu saling menumpuk 28px). */
+  .tarot-fan.tarot-terbuka {
+    z-index: 5;
+  }
+
+  .tarot-fan:hover .tarot-inner > .tarot-face:first-child,
+  .tarot-fan:has(:focus-visible) .tarot-inner > .tarot-face:first-child {
+    box-shadow:
+      0 30px 60px -18px rgba(0, 0, 0, 0.8),
+      0 0 40px -6px rgba(201, 169, 255, 0.35) !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Tumpukan kartu tangga (layar sempit)
+   ---------------------------------------------------------------------------
+   Posisi turunnya dipasang lewat --tangga-y, bukan lewat `top`, supaya
+   perpindahannya berjalan di compositor (transform) dan tidak memicu layout
+   ulang pada tiap frame. Kartu yang dipilih naik ke slot paling atas. */
+.tangga-kartu {
+  transform: translate3d(0, var(--tangga-y, 0), 0) scale(var(--tangga-skala, 1));
+  transition:
+    transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 350ms ease;
+  will-change: transform;
+}
+
+/* Kartu di belakang sedikit diredupkan supaya tangganya terbaca dalam. */
+.tangga-kartu:not(:last-child) {
+  filter: brightness(0.9);
+}
+.tangga-kartu:active {
+  transform: translate3d(0, var(--tangga-y, 0), 0)
+    scale(calc(var(--tangga-skala, 1) * 0.985));
+}
+
+/* ---------------------------------------------------------------------------
+   Modal kartu
+   --------------------------------------------------------------------------- */
+.modal-tarot-tirai {
+  animation: tirai-masuk 260ms ease both;
+}
+.modal-tarot-panel {
+  animation: panel-masuk 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow:
+    0 40px 90px -30px rgba(0, 0, 0, 0.9),
+    0 0 60px -20px rgba(167, 139, 250, 0.45);
+}
+
+@keyframes tirai-masuk {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Panel datang dengan sedikit putaran pada sumbu X — bahasa gerak yang sama
+   dengan kartu tarot yang dibalik di layar lebar. */
+@keyframes panel-masuk {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) rotateX(-12deg) translateY(24px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) rotateX(0) translateY(0) scale(1);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Transisi antar halaman
+   ---------------------------------------------------------------------------
+   Isi halaman masuk sambil berputar seperti kartu yang dibalik. Kelasnya
+   ditempel pada wadah ISI tiap halaman (<main> di AppShell, di halaman publik,
+   dan kolom formulir AuthLayout) — BUKAN pada pembungkus di layout.
+
+   Alasannya: `transform` dan `perspective` menjadikan elemen itu containing
+   block untuk semua keturunan `position: fixed`. Kalau yang berputar adalah
+   pembungkus seluruh halaman, navigasi atas, navigasi bawah aplikasi, dan modal
+   kartu ikut menempel ke pembungkus dan tergulir pergi bersama isi halaman.
+   Karena itu:
+     - animasi hanya dipasang pada wadah yang tidak berisi elemen fixed, dan
+     - perspektifnya ditulis di dalam transform (`perspective()`), dan
+       fill-mode-nya `backwards` — setelah animasi selesai tidak ada transform
+       yang tertinggal sama sekali.
+
+   Animasinya diputar ulang dengan sendirinya: setiap halaman merender
+   AppShell / NavPublik / AuthLayout-nya sendiri, jadi pindah halaman berarti
+   wadah ini dipasang baru. */
+.transisi-halaman {
+  animation: kartu-berputar-masuk 620ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transform-origin: 50% 40%;
+}
+
+@keyframes kartu-berputar-masuk {
+  from {
+    opacity: 0;
+    transform: perspective(1400px) rotateY(-9deg) rotateX(3deg)
+      translate3d(0, 26px, -90px);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1400px) rotateY(0) rotateX(0) translate3d(0, 0, 0);
+  }
+}
+
+/* Kartu yang sedang berputar sedikit melebar dari kolomnya. Tanpa ini layar
+   HP sempat mendapat gulir horizontal beberapa piksel di setiap perpindahan
+   halaman. `clip` (bukan `hidden`) supaya body tidak berubah menjadi wadah
+   gulir sendiri. */
+body {
+  overflow-x: clip;
+}
+
+/* Transisi halaman dimatikan kalau pengguna meminta "kurangi gerak". */
+@media (prefers-reduced-motion: reduce) {
+  .transisi-halaman {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Palet aurora — latar halaman publik
+   ---------------------------------------------------------------------------
+   Dipasang sebagai latar SECTION itu sendiri, bukan sebagai lapisan absolut
+   di dalamnya. Lapisan absolut dilukis di atas konten yang tidak diposisikan,
+   dan dengan z-index negatif ia justru tenggelam di bawah latar halaman.
+   Semua lapisannya memudar ke transparan di bawah, jadi tidak ada garis batas
+   yang terlihat di tempat section berakhir. */
+.latar-aurora {
+  background:
+    radial-gradient(60% 55% at 10% 0%, rgba(91, 52, 242, 0.5), transparent 70%),
+    radial-gradient(55% 50% at 92% 6%, rgba(154, 92, 198, 0.38), transparent 70%),
+    radial-gradient(45% 40% at 55% 30%, rgba(124, 128, 248, 0.16), transparent 75%),
+    linear-gradient(180deg, rgba(76, 36, 200, 0.22) 0%, transparent 88%);
+}
+
+.latar-aurora-kartu {
+  background:
+    radial-gradient(80% 90% at 0% 0%, rgba(91, 52, 242, 0.55), transparent 65%),
+    radial-gradient(70% 80% at 100% 100%, rgba(154, 92, 198, 0.45), transparent 65%),
+    #140c24;
+}
+
+/* ---------------------------------------------------------------------------
+   Dashboard HP — kartu saldo terang, aksi bulat, misi geser, lembar aktivitas
+   --------------------------------------------------------------------------- */
+
+/* Kartu saldo: satu-satunya permukaan TERANG di aplikasi, sengaja — saldo
+   adalah hal pertama yang harus terbaca. Teks di atasnya gelap (#1a1233);
+   label aksinya (#2a1f55) tetap lolos 4,5:1 bahkan di bagian bawah kartu
+   yang tersaput cahaya periwinkle. */
+.kartu-saldo {
+  position: relative;
+  border-radius: 1.75rem;
+  color: #1a1233;
+  background:
+    radial-gradient(90% 70% at 50% 118%, rgba(124, 128, 248, 0.85), transparent 70%),
+    linear-gradient(180deg, #ffffff 0%, #f1ecff 42%, #d9ceff 100%);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.9) inset,
+    0 28px 60px -26px rgba(91, 52, 242, 0.85);
+}
+
+.tombol-bulat {
+  display: flex;
+  height: 3.25rem;
+  width: 3.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  color: #2a1f55;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.85) inset,
+    0 8px 18px -10px rgba(58, 40, 140, 0.6);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+a:hover > .tombol-bulat,
+a:focus-visible > .tombol-bulat {
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-2px);
+}
+
+.kartu-misi-geser {
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    135deg,
+    rgba(154, 92, 198, 0.34),
+    rgba(91, 52, 242, 0.18) 60%,
+    rgba(255, 255, 255, 0.04)
+  );
+  backdrop-filter: blur(12px);
+}
+
+/* Lembar dengan pegangan di atas, seperti panel yang bisa ditarik. */
+.lembar {
+  border-radius: 1.75rem 1.75rem 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(38, 27, 62, 0.92), rgba(22, 15, 36, 0.96));
+  box-shadow: 0 -18px 40px -24px rgba(0, 0, 0, 0.8);
+}
+
+/* Tombol Scan di tengah navigasi bawah. Cincin 5px sewarna bilah navigasi
+   membuatnya terlihat "menembus" tepi atas bilah. */
+.fab-scan {
+  height: 3.75rem;
+  width: 3.75rem;
+  border-radius: 9999px;
+  color: #fff;
+  background: radial-gradient(circle at 30% 25%, #9ea0ff, #5b5ff0 55%, #4338ca);
+  box-shadow:
+    0 0 0 5px #120c1f,
+    0 10px 26px -6px rgba(91, 95, 240, 0.85);
+  transition: transform 0.2s ease;
+}
+.fab-scan:active {
+  transform: scale(0.95);
+}
+.fab-scan:focus-visible {
+  outline: 2px solid #c9c6ff;
+  outline-offset: 4px;
+}
+
+.avatar-inisial {
+  color: #fff;
+  background: linear-gradient(135deg, #7c80f8, #9a5cc6);
+}
+
+/* ---------------------------------------------------------------------------
+   Dashboard PC — grafik, meter kategori, kartu berwarna
+   --------------------------------------------------------------------------- */
+
+/* Batang grafik: putih memudar dengan garis terang di puncaknya; batang hari
+   dengan pengeluaran tertinggi berwarna periwinkle. Hari tanpa pengeluaran
+   digambar sebagai batang arsir rendah — tetap ada, supaya jarak antar hari
+   di grafik jujur terhadap waktu. */
+.batang-isi {
+  background: linear-gradient(180deg, rgba(233, 213, 255, 0.5), rgba(233, 213, 255, 0.06));
+  box-shadow: 0 -1.5px 0 0 rgba(255, 255, 255, 0.75) inset;
+}
+.batang-puncak {
+  background: linear-gradient(180deg, #8b8cfb, #5b5ff0);
+  box-shadow: 0 10px 28px -10px rgba(91, 95, 240, 0.9);
+}
+.batang-kosong {
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.07) 0 2px,
+    transparent 2px 7px
+  );
+}
+
+/* Meter garis di strip kategori: garis-garis tipis, dan bagian yang lebih
+   terang menunjukkan porsi kategori itu dari seluruh pengeluaran. Hiasan yang
+   membawa data, bukan hiasan kosong. */
+.meter-garis,
+.meter-garis-isi {
+  background: repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 5px);
+}
+.meter-garis {
+  position: relative;
+  height: 1.1rem;
+  color: rgba(255, 255, 255, 0.14);
+}
+.meter-garis-isi {
+  position: absolute;
+  inset: 0 auto 0 0;
+  color: #c9c6ff;
+}
+
+/* Kartu berwarna — terjemahan gelap dari kartu pastel di referensi desain.
+   Ditaruh di akhir berkas supaya menang dari latar .card. */
+.kartu-tint-hijau {
+  background: linear-gradient(160deg, rgba(52, 211, 153, 0.14), rgba(21, 14, 32, 0.9) 55%);
+}
+.kartu-tint-merah {
+  background: linear-gradient(160deg, rgba(248, 113, 113, 0.14), rgba(21, 14, 32, 0.9) 55%);
+}
+.kartu-tint-lilac {
+  background: linear-gradient(160deg, rgba(201, 169, 255, 0.22), rgba(21, 14, 32, 0.9) 60%);
+}
+.kartu-tint-indigo {
+  background: linear-gradient(160deg, rgba(124, 128, 248, 0.24), rgba(21, 14, 32, 0.9) 60%);
+}
+
+/* Pita yang digeser dengan jari tidak butuh bilah gulir. Sengaja ditulis
+   sebagai kelas biasa di luar @layer: aturan global `* { scrollbar-width:
+   thin }` di atas juga di luar layer, dan aturan tanpa layer SELALU menang
+   atas utilitas Tailwind (yang hidup di dalam layer) — berapa pun
+   spesifisitasnya. Utilitas `[scrollbar-width:none]` kalah diam-diam. */
+.tanpa-bilah-gulir {
+  scrollbar-width: none;
+}
+.tanpa-bilah-gulir::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Kolom isian & tombol WhatsApp
+   ---------------------------------------------------------------------------
+   Ditaruh di @layer components supaya utilitas Tailwind (yang hidup di layer
+   utilities) masih bisa menimpanya — misalnya `font-mono` di kolom nominal.
+   Aturan di luar layer justru akan mengalahkan utilitas apa pun. */
+@layer components {
+  /* Garis tepi #6b6380 = 3,35:1 terhadap latar kolom — lolos WCAG 1.4.11.
+     Garis tepi kolom lama (#2a2038) hanya 1,24:1 dan nyaris tidak terlihat. */
+  .kolom-isian {
+    width: 100%;
+    min-width: 0;
+    border-radius: 0.875rem;
+    border: 1px solid #6b6380;
+    background: var(--color-filup-bg-2);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    color: var(--color-filup-text);
+    outline: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .kolom-isian::placeholder {
+    color: #8f86a3;
+  }
+  .kolom-isian:focus {
+    border-color: var(--color-filup-periwinkle);
+    box-shadow: 0 0 0 3px rgba(124, 128, 248, 0.25);
+  }
+
+  .tombol-wa {
+    display: inline-flex;
+    height: 3.25rem;
+    min-width: 3.25rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #5d60f0, #4338ca);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.14) inset,
+      0 12px 28px -10px rgba(91, 95, 240, 0.9);
+    transition: transform 0.2s ease;
+  }
+  .tombol-wa:hover {
+    transform: translateY(-2px);
+  }
+  .tombol-wa:focus-visible {
+    outline: 2px solid #c9c6ff;
+    outline-offset: 3px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Mockup HP di hero beranda
+   ---------------------------------------------------------------------------
+   Di @layer components supaya utilitas masih bisa menimpanya. Tingginya
+   ditetapkan (bukan mengikuti isi) supaya proporsinya tetap seperti HP
+   sungguhan, sekitar 9 : 19,5. */
+@layer components {
+  /* Perspektif dipasang di pembungkus, bukan di elemen yang diputar —
+     perspective di elemen yang sama membuat putarannya terlihat datar.
+     Pembungkus ini tidak berisi elemen position: fixed, jadi aman (lihat
+     catatan "jangan memutar pembungkus berisi elemen fixed" di CLAUDE.md). */
+  .ponsel-panggung {
+    perspective: 1800px;
+    /* Titik pandang di KANAN HP. Sisi kanan (ketebalan) hanya terlihat kalau
+       mata berada di sebelah kanan bidang sisi itu; dengan titik pandang di
+       kiri, sisinya tersembunyi di balik layar dan HP terlihat setipis kertas. */
+    perspective-origin: 95% 40%;
+  }
+
+  /* rotateY NEGATIF: tepi kanan HP maju mendekati pengunjung dan tepi kiri
+     mundur, sehingga layarnya menghadap ke kiri. Di HP sudutnya diperkecil —
+     kolomnya sempit, dan putaran besar membuat isi layar sulit dibaca. */
+  .ponsel {
+    --ponsel-putar: -15deg;
+    transform: rotateY(var(--ponsel-putar)) rotateX(4deg) rotateZ(1deg);
+    transform-style: preserve-3d;
+    border-radius: 2.75rem;
+    padding: 0.55rem;
+    background: linear-gradient(160deg, #3a3057 0%, #1b1430 45%, #0e0a18 100%);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.14) inset,
+      0 0 0 1px rgba(0, 0, 0, 0.6),
+      0 50px 100px -40px rgba(91, 52, 242, 0.75),
+      0 30px 60px -30px rgba(0, 0, 0, 0.9);
+  }
+
+  @media (min-width: 1024px) {
+    .ponsel {
+      --ponsel-putar: -24deg;
+    }
+  }
+
+  /* Sisi kanan HP = ketebalan badan. Diletakkan tepat di tepi kanan lalu
+     diputar 90° pada tepi kirinya, sehingga memanjang ke BELAKANG layar.
+     Karena HP menghadap ke kiri, sisi inilah yang terlihat. Tombol daya
+     digambar sebagai pita yang sedikit lebih terang di gradasinya.
+     Atas-bawahnya dimundurkan supaya tidak mencuat di sudut yang membulat. */
+  .ponsel-sisi {
+    position: absolute;
+    top: 2.1rem;
+    bottom: 2.1rem;
+    left: 100%;
+    width: 13px;
+    transform-origin: left center;
+    transform: rotateY(90deg);
+    border-radius: 0 6px 6px 0;
+    background: linear-gradient(
+      to bottom,
+      #241c38 0%,
+      #3b3057 12%,
+      #2a2140 22%,
+      #5a4b82 24%,
+      #5a4b82 33%,
+      #2a2140 35%,
+      #3b3057 70%,
+      #241c38 100%
+    );
+  }
+
+  .ponsel-kilap {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      112deg,
+      rgba(255, 255, 255, 0.13) 0%,
+      rgba(255, 255, 255, 0.04) 26%,
+      transparent 44%
+    );
+  }
+
+  /* Bayangan di bawah HP. Tidak ikut diputar (saudara .ponsel, bukan anak),
+     dan sedikit bergeser ke kanan — sisi kanan HP yang lebih dekat
+     menjatuhkan bayangan yang lebih pekat. */
+  .ponsel-bayang {
+    position: absolute;
+    left: 14%;
+    right: 2%;
+    bottom: -38px;
+    height: 56px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0, 0, 0, 0.7), transparent);
+    filter: blur(8px);
+  }
+
+  .ponsel-layar {
+    position: relative;
+    height: 590px;
+    overflow: hidden;
+    border-radius: 2.25rem;
+    color: var(--color-filup-text);
+    background:
+      radial-gradient(120% 55% at 50% 0%, rgba(91, 52, 242, 0.5), transparent 62%),
+      radial-gradient(80% 40% at 100% 30%, rgba(154, 92, 198, 0.25), transparent 70%),
+      #0e0918;
+  }
+
+  /* Catatan kecil yang "melayang" di sisi HP. Diam — kesan melayangnya
+     datang dari bayangan, bukan dari animasi yang berulang. */
+  .kartu-melayang {
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(26, 18, 44, 0.82);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 20px 40px -18px rgba(0, 0, 0, 0.85);
+  }
+}
