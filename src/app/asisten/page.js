@@ -1,11 +1,20 @@
 "use client";
 
 import Emblem from "@/components/Emblem";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import AppShell from "@/components/AppShell";
 import { useAuth } from "@/contexts/AuthProvider";
 import { useData } from "@/contexts/DataProvider";
 import { mockChat } from "@/lib/mockData";
+
+// Sapaan pembuka untuk akun sungguhan. Percakapan contoh di mockChat hanya
+// dipakai saat mode demo — kalau ikut tampil di akun nyata, pengguna baru
+// seolah-olah sudah pernah bertanya soal misi yang tidak pernah dia buat.
+function sapaan(nama) {
+  const panggilan =
+    nama && nama !== "Pengguna" ? ` ${nama.split(" ")[0]}` : "";
+  return `Halo${panggilan}! Aku FiLUP Coach kamu. Ada yang mau ditanyain soal keuangan hari ini?`;
+}
 
 const SUGGESTIONS = [
   "Misi sepatuku kapan selesai?",
@@ -18,25 +27,37 @@ const DEMO_REPLY =
   "Aku catat ya. Coba sisihkan sedikit demi sedikit setiap kamu menerima uang saku — konsisten Rp10.000 per hari sudah cukup membuat misimu bergerak maju.";
 
 export default function AsistenPage() {
-  const { profile } = useAuth();
+  const { profile, demoMode } = useAuth();
   const { balance, activeMissions } = useData();
-  const [messages, setMessages] = useState(mockChat);
+  // State hanya menyimpan percakapan yang benar-benar terjadi. Sapaan pembuka
+  // dihitung saat render supaya namanya ikut terisi begitu profil selesai
+  // dimuat, tanpa perlu menimpa isi percakapan.
+  const [percakapan, setPercakapan] = useState(() => (demoMode ? mockChat : []));
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [simulated, setSimulated] = useState(false);
   const [apiError, setApiError] = useState("");
   const endRef = useRef(null);
 
+  const messages = useMemo(
+    () =>
+      demoMode
+        ? percakapan
+        : [{ role: "assistant", text: sapaan(profile.name) }, ...percakapan],
+    [demoMode, percakapan, profile.name]
+  );
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, loading]);
+
 
   async function send(text) {
     if (!text.trim() || loading) return;
 
     // Riwayat sebelum pesan baru — dipakai AI sebagai konteks percakapan.
     const history = messages;
-    setMessages((prev) => [...prev, { role: "user", text }]);
+    setPercakapan((prev) => [...prev, { role: "user", text }]);
     setInput("");
     setApiError("");
     setLoading(true);
@@ -59,7 +80,7 @@ export default function AsistenPage() {
     };
 
     function reply(textOut) {
-      setMessages((prev) => [...prev, { role: "assistant", text: textOut }]);
+      setPercakapan((prev) => [...prev, { role: "assistant", text: textOut }]);
       setLoading(false);
     }
 
