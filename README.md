@@ -1,5 +1,4 @@
 <div align="center">
-<<<<<<< Updated upstream
 FiLUP — Finance Level Up
 
 Aplikasi web keuangan bergaya game untuk pelajar. Foto struknya, AI yang mencatat, kamu yang naik level.
@@ -27,13 +26,9 @@ Setiap catatan memberi XP. Naik level, naik rank, buka lencana, kejar misi tabun
 
 Demo
 
-Tautan: https://ISI-DOMAIN-KAMU
+Tautan: https://filup.jokuster.com
 
 Akun uji coba yang datanya sudah terisi, supaya bisa langsung dilihat tanpa perlu mendaftar dan mencari struk:
-
-	
-Email	ISI-EMAIL-DEMO
-Kata sandi	ISI-KATA-SANDI-DEMO
 
 Kalau ingin mencoba dari akun kosong, silakan daftar sendiri — seluruh alur onboarding berfungsi penuh.
 
