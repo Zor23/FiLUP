@@ -24,8 +24,6 @@ Foto struknya, AI yang mengetik. Struk belanja atau bukti transfer difoto langsu
 
 Setiap catatan memberi XP. Naik level, naik rank, buka lencana, kejar misi tabungan untuk barang impian. Kebiasaan baik jadi terasa seperti naik level, bukan seperti tugas.
 
-Demo
-
 Tautan: https://filup.jokuster.com
 
 Akun uji coba yang datanya sudah terisi, supaya bisa langsung dilihat tanpa perlu mendaftar dan mencari struk:
