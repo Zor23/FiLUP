@@ -149,11 +149,9 @@ Kalau Gemini menjawab 503 karena sedang ramai, permintaan diulang dengan jeda be
 Kalau `GEMINI_API_KEY` belum diisi, hasil scan dan jawaban chat diberi label kuning **"Hasil simulasi"**. Fitur AI tidak pernah dibuat terlihat aktif padahal belum.
 
 ---
->>>>>>> Stashed changes
 
 2. AI tidak pernah menghitung angka. Ini yang membedakan halaman Wawasan dari sekadar menempelkan chatbot. Seluruh angka — total pemasukan, pengeluaran per kategori, rata-rata harian — dihitung aplikasi secara deterministik di src/lib/analisis.js. Gemini hanya menerima fakta yang sudah jadi, dengan instruksi tegas untuk menyalin nominal persis dan dilarang menghitung ulang. Model bahasa tidak bisa diandalkan untuk aritmetika, dan angka keuangan yang salah lebih berbahaya daripada tidak ada angka sama sekali.
 
-<<<<<<< Updated upstream
 3. Rantai model cadangan, tanpa mengganggu pengguna. Kalau Gemini menjawab 503 karena sedang ramai, permintaan diulang dengan jeda bertambah, lalu otomatis berpindah ke model berikutnya: gemini-3.7-flash → 3.6-flash → 3.5-flash → 3.5-flash-lite. Indikator "AI sedang membaca" tetap berjalan — pengguna tidak pernah melihat pesan teknis soal model sibuk. Masalah yang memang tidak bisa diperbaiki dengan mengulang (API key salah, kuota habis) langsung dilaporkan apa adanya. Lihat src/lib/geminiFetch.js.
 
 4. Label kejujuran. Kalau GEMINI_API_KEY belum diisi, hasil scan dan jawaban chat diberi label kuning "Hasil simulasi". Fitur AI tidak pernah dibuat terlihat aktif padahal belum.
@@ -182,96 +180,6 @@ bash
 | Hosting | Hostinger Business (Node.js App) |
 
 Font (Plus Jakarta Sans, JetBrains Mono, Bodoni Moda) dipasang lewat paket npm `@fontsource-variable/*`, **bukan** `next/font/google` — supaya build tidak bergantung pada akses ke server Google Fonts dan halaman tidak memanggil domain pihak ketiga saat dibuka.
-
----
-
-## Menjalankan di lokal
-
-```bash
->>>>>>> Stashed changes
-git clone https://github.com/Zor23/FiLUP.git
-cd FiLUP
-npm install
-npm run dev
-
-Buka http://localhost:3000.
-
-<<<<<<< Updated upstream
-Tanpa konfigurasi apa pun, aplikasi langsung jalan dalam mode demo memakai data contoh dari src/lib/mockData.js — halaman terproteksi bisa dibuka, form login terisi otomatis, dan hasil AI diganti contoh berlabel "simulasi". Ini disengaja supaya aplikasi tetap bisa diperagakan walau konfigurasi atau internet bermasalah.
-
-Untuk menjalankan dengan backend sungguhan, salin .env.local.example menjadi .env.local lalu isi nilainya.
-
-Environment variables
-Variabel	Wajib	Keterangan
-NEXT_PUBLIC_SITE_URL	untuk produksi	Alamat situs tanpa garis miring di akhir. Dipakai untuk Open Graph, sitemap.xml, dan robots.txt
-NEXT_PUBLIC_FIREBASE_API_KEY	ya	Firebase Console → Project Settings → SDK setup
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN	ya	
-NEXT_PUBLIC_FIREBASE_PROJECT_ID	ya	
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET	ya	
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID	ya	
-NEXT_PUBLIC_FIREBASE_APP_ID	ya	
-GEMINI_API_KEY	ya	https://aistudio.google.com/apikey — tanpa awalan NEXT_PUBLIC_, hanya dipakai di server
-GEMINI_MODEL	tidak	Default gemini-3.7-flash
-GEMINI_FALLBACK_MODELS	tidak	Dipisah koma. Model bisa diganti tanpa mengubah kode kalau Google menghentikannya
-
-Variabel berawalan NEXT_PUBLIC_ ditanam saat build, bukan dibaca saat aplikasi berjalan — jadi isi dulu, baru jalankan npm run build.
-
-Struktur folder
-src/app/                     halaman (App Router)
-  page.js                    beranda publik
-  tentang/  cara-kerja/      halaman publik
-  dashboard/  scan/  misi/   halaman aplikasi
-  asisten/  riwayat/  profil/
-  kuis/  teman/              kuis harian & sosial
-  api/scan-receipt/          OCR struk via Gemini
-  api/chat/                  asisten AI via Gemini
-  api/wawasan/               analisis keuangan via Gemini
-
-src/components/              komponen antarmuka
-  publik/                    khusus halaman publik (kartu tarot, navigasi, footer)
-
-src/contexts/
-  AuthProvider.js            status login, profil, XP
-  DataProvider.js            transaksi, misi, saldo
-  SosialProvider.js          teman & misi bersama
-
-src/lib/
-  firebase.js                init Firebase + flag isFirebaseConfigured
-  db.js                      operasi Firestore
-  analisis.js                perhitungan statistik keuangan (deterministik)
-  gamification.js            aturan XP & level
-  ranks.js                   sistem rank
-  kuisHarian.js              bank soal kuis
-  geminiFetch.js             pemanggil Gemini + pengulangan + model cadangan
-  geminiError.js             penerjemah error Gemini ke bahasa Indonesia
-  kompresGambar.js           memperkecil foto struk sebelum diunggah
-  mockData.js                data contoh untuk mode demo
-
-firestore.rules              security rules — harus di-publish manual di Console
-server.js                    titik masuk untuk Hostinger Node.js App
-
-Halaman tidak pernah memanggil Firestore langsung — selalu lewat useData(), useAuth(), atau useSosial(), supaya mode demo tetap berfungsi.
-=======
-**Tanpa konfigurasi apa pun, aplikasi langsung jalan dalam mode demo** memakai data contoh dari `src/lib/mockData.js` — halaman terproteksi bisa dibuka, form login terisi otomatis, dan hasil AI diganti contoh berlabel "simulasi". Ini disengaja supaya aplikasi tetap bisa diperagakan walau konfigurasi atau internet bermasalah.
-
-Untuk menjalankan dengan backend sungguhan, salin `.env.local.example` menjadi `.env.local` lalu isi nilainya.
-
-### Environment variables
-
-| Variabel | Wajib | Keterangan |
-|---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | untuk produksi | Alamat situs tanpa garis miring di akhir. Dipakai untuk Open Graph, `sitemap.xml`, dan `robots.txt` |
-| `NEXT_PUBLIC_FIREBASE_API_KEY` | ya | Firebase Console → Project Settings → SDK setup |
-| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | ya | |
-| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | ya | |
-| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | ya | |
-| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | ya | |
-| `NEXT_PUBLIC_FIREBASE_APP_ID` | ya | |
-| `GEMINI_API_KEY` | ya | https://aistudio.google.com/apikey — **tanpa** awalan `NEXT_PUBLIC_`, hanya dipakai di server |
-| `GEMINI_MODEL` | tidak | Default `gemini-3.7-flash` |
-| `GEMINI_FALLBACK_MODELS` | tidak | Dipisah koma. Model bisa diganti tanpa mengubah kode kalau Google menghentikannya |
-
-Variabel berawalan `NEXT_PUBLIC_` **ditanam saat build**, bukan dibaca saat aplikasi berjalan — jadi isi dulu, baru jalankan `npm run build`.
 
 ---
 
