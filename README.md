@@ -68,7 +68,7 @@ Empat keputusan teknis yang kami anggap penting:
 Karya **Tim STIBAJRA** — SMK TI Bali Global Jimbaran
 untuk **Bali AI Tech Fest 2026 · AI Web Innovation Challenge**
 
-[Demo langsung](https://ISI-DOMAIN-KAMU) · [Cara kerja](https://ISI-DOMAIN-KAMU/cara-kerja) · [Tentang](https://ISI-DOMAIN-KAMU/tentang)
+[Coba langsung](https://filup.jokuster.com) · [Cara kerja]([https://ISI-DOMAIN-KAMU/cara-kerja](https://filup.jokuster.com/cara-kerja)) · [Tentang](https://filup.jokuster.com/tentang)
 
 </div>
 
