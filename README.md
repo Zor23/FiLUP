@@ -26,10 +26,6 @@ Setiap catatan memberi XP. Naik level, naik rank, buka lencana, kejar misi tabun
 
 Tautan: https://filup.jokuster.com
 
-Akun uji coba yang datanya sudah terisi, supaya bisa langsung dilihat tanpa perlu mendaftar dan mencari struk:
-
-Kalau ingin mencoba dari akun kosong, silakan daftar sendiri — seluruh alur onboarding berfungsi penuh.
-
 <!-- ISI: tambahkan 3 tangkapan layar di sini setelah deploy, mis. ![Beranda](docs/beranda.png) ![Dashboard](docs/dashboard.png) ![Scan struk](docs/scan.png) -->
 Fitur
 
