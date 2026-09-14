@@ -93,27 +93,6 @@ FiLUP menghapus kedua hambatan itu sekaligus.
 
 ---
 
-## Demo
-
-**Tautan:** https://ISI-DOMAIN-KAMU
-
-Akun uji coba yang datanya sudah terisi, supaya bisa langsung dilihat tanpa perlu mendaftar dan mencari struk:
-
-| | |
-|---|---|
-| Email | `ISI-EMAIL-DEMO` |
-| Kata sandi | `ISI-KATA-SANDI-DEMO` |
-
-> Kalau ingin mencoba dari akun kosong, silakan daftar sendiri — seluruh alur onboarding berfungsi penuh.
-
-<!-- ISI: tambahkan 3 tangkapan layar di sini setelah deploy, mis.
-![Beranda](docs/beranda.png)
-![Dashboard](docs/dashboard.png)
-![Scan struk](docs/scan.png)
--->
-
----
-
 ## Fitur
 
 **Pencatatan otomatis dari foto**
