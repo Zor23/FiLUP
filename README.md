@@ -220,10 +220,6 @@ firestore.rules              security rules — harus di-publish manual di Conso
 server.js                    titik masuk untuk Hostinger Node.js App
 ```
 
-Halaman tidak pernah memanggil Firestore langsung — selalu lewat `useData()`, `useAuth()`, atau `useSosial()`, supaya mode demo tetap berfungsi.
-
----
-
 ## Keamanan data
 
 Aturan akses ada di `firestore.rules` dan **harus ditempel manual** di Firebase Console → Firestore → tab Rules → Publish.
@@ -237,11 +233,9 @@ Aturan akses ada di `firestore.rules` dan **harus ditempel manual** di Firebase 
 Saldo sengaja **tidak disimpan** sebagai field, melainkan selalu dihitung ulang dari daftar transaksi — sehingga tidak pernah ada angka saldo yang tidak cocok dengan riwayatnya.
 
 ---
->>>>>>> Stashed changes
 
 Keamanan data
 
-<<<<<<< Updated upstream
 Aturan akses ada di firestore.rules dan harus ditempel manual di Firebase Console → Firestore → tab Rules → Publish.
 
 Catatan keuangan (users/{uid}/...) hanya bisa dibaca dan ditulis pemiliknya
@@ -254,7 +248,7 @@ Saldo sengaja tidak disimpan sebagai field, melainkan selalu dihitung ulang dari
 
 Deploy
 
-Aplikasi ini dijalankan di Hostinger Business Web Hosting lewat fitur Node.js App di hPanel.
+Aplikasi ini dijalankan di Hostinger Web Hosting lewat fitur Node.js App di hPanel.
 
 hPanel → Website → Node.js → Create Application
 Node.js versi 22, Application startup file: server.js
@@ -263,42 +257,16 @@ Isi seluruh Environment Variables terlebih dahulu (lihat tabel di atas)
 Jalankan Install Dependencies, lalu Run NPM Build
 Restart Application
 Tambahkan domain ke Firebase Console → Authentication → Settings → Authorized domains
-
-Langkah 4 harus dilakukan sebelum langkah 5. Kalau terbalik, konfigurasi Firebase kosong di hasil build dan aplikasi akan berjalan dalam mode demo di produksi.
-
-Tim STIBAJRA
-
-SMK TI Bali Global Jimbaran
-
-Nama	Peran
-Rafa Perfours Mita	Pengembangan aplikasi & integrasi AI
-Komang Tri Saguna Narya Ardana	Desain & pengalaman pengguna
-
-Dibuat untuk Bali AI Tech Fest 2026, kategori AI Web Innovation Challenge — "Create Smart Web Solutions with AI for Indonesia's Future".
-=======
-Aplikasi ini dijalankan di **Hostinger Business Web Hosting** lewat fitur Node.js App di hPanel.
-
-1. hPanel → **Website → Node.js → Create Application**
-2. Node.js versi 22, **Application startup file: `server.js`**
-3. Hubungkan ke repository ini lewat opsi Git
-4. **Isi seluruh Environment Variables terlebih dahulu** (lihat tabel di atas)
-5. Jalankan **Install Dependencies**, lalu **Run NPM Build**
-6. **Restart Application**
-7. Tambahkan domain ke Firebase Console → Authentication → Settings → Authorized domains
-
-Langkah 4 harus dilakukan sebelum langkah 5. Kalau terbalik, konfigurasi Firebase kosong di hasil build dan aplikasi akan berjalan dalam mode demo di produksi.
-
 ---
 
 ## Tim STIBAJRA
 
 **SMK TI Bali Global Jimbaran**
 
-| Nama | Peran |
+| Nama | Anggota |
 |---|---|
 | Rafa Perfours Mita | Pengembangan aplikasi & integrasi AI |
 | Komang Tri Saguna Narya Ardana | Desain & pengalaman pengguna |
 
 Dibuat untuk **Bali AI Tech Fest 2026**, kategori AI Web Innovation Challenge —
 *"Create Smart Web Solutions with AI for Indonesia's Future"*.
->>>>>>> Stashed changes
